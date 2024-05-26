@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 function App() {
-
+  
   const [serverData, setServerData] = useState('')
   useEffect(() => {
     fetch("/api")
