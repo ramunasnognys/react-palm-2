@@ -1,21 +1,30 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react';
 
 function App() {
-  const [serverData, setServerData] = useState('')
+  const [serverData, setServerData] = useState('');
+  const [userPrompt, setUserPrompt] = useState('');
+
   function handleSubmit() {
-    const userPrompt = 'The Quick Brown Fox'
     fetch('/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ 'prompt': userPrompt })
+      body: JSON.stringify({ prompt: userPrompt }) // Updated key
     })
-      .then((res) => res.json())
-      .then((data) => {
-        setServerData(data)
-        console.log(data)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok ' + res.statusText);
+        }
+        return res.json();
       })
+      .then((data) => {
+        setServerData(data.answer); // Access the answer key
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
   }
 
   return (
@@ -29,11 +38,11 @@ function App() {
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'end', backgroundColor: '#222', padding: '10px' }}>
-        <textarea style={{ margin: '0', flexGrow: '1', overflowY: 'hidden' }} placeholder='Type in Prompt...' />
+        <textarea onChange={(e) => setUserPrompt(e.target.value)} style={{ margin: '0', flexGrow: '1', overflowY: 'hidden' }} placeholder='Type in Prompt...' />
         <button onClick={handleSubmit} style={{ margin: '0', flex: '1', marginLeft: '10px' }}>Go</button>
       </div>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
